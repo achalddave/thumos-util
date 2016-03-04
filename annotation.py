@@ -40,10 +40,39 @@ def load_annotations_json(annotations_json_path, category=None):
     # Extract annotations for category
     for annotation in annotations_list:
         annotation = Annotation(**annotation)
-        if category is not None and annotation.category != category:
-            continue
         annotations[annotation.filename].append(annotation)
+    if category is not None:
+        annotations = filter_annotations_by_category(annotations, category)
     return annotations
+
+
+def filter_annotations_by_category(annotations, category):
+    """
+    Return only annotations that belong to category.
+
+    Args:
+        annotations (dict): Maps filenames to list of Annotations.
+    Returns:
+        filtered_annotations (dict): Maps filenames to list of Annotations.
+
+    >>> SimpleAnnotation = collections.namedtuple(
+    ...         'SimpleAnnotation', ['category'])
+    >>> annotations = {'file1': [SimpleAnnotation('class1'),
+    ...                          SimpleAnnotation('class2')],
+    ...                'file2': [SimpleAnnotation('class2')]}
+    >>> filtered = filter_annotations_by_category(annotations, 'class1')
+    >>> filtered.keys()
+    ['file1']
+    >>> len(filtered['file1'])
+    1
+    """
+    filtered_annotations = {}
+    for filename, annotations in annotations.items():
+        filtered = [x for x in annotations if x.category == category]
+        if filtered:
+            filtered_annotations[filename] = filtered
+    return filtered_annotations
+
 
 def calculate_duration_mean_std(annotation_groundtruth):
     """
