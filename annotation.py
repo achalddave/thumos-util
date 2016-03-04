@@ -1,5 +1,6 @@
 import collections
 import json
+import numpy as np
 
 Annotation = collections.namedtuple(
     'Annotation', ['filename', 'start_frame', 'end_frame', 'start_seconds',
@@ -43,3 +44,19 @@ def load_annotations_json(annotations_json_path, category=None):
             continue
         annotations[annotation.filename].append(annotation)
     return annotations
+
+def calculate_duration_mean_std(annotation_groundtruth):
+    """
+    Args:
+        annotation_groundtruth (dict): Maps filenames to groundtruth
+            annotations.
+
+    Returns:
+        mean, stderr of durations
+    """
+    durations = []
+    for annotations in annotation_groundtruth.values():
+        durations.extend([annotation.end_frame - annotation.start_frame + 1
+                          for annotation in annotations])
+    durations = np.array(durations)
+    return durations.mean(), durations.std()
