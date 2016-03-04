@@ -28,3 +28,4 @@ def evaluate(detections, subset='val', ):
     Returns:
         precision_recalls (list of (prec
     """
+    raise NotImplemented
