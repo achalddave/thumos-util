@@ -1,4 +1,5 @@
 import collections
+import json
 
 Annotation = collections.namedtuple(
     'Annotation', ['filename', 'start_frame', 'end_frame', 'start_seconds',
@@ -28,3 +29,17 @@ Annotation = collections.namedtuple(
 """
 THUMOS_indices = [7, 9, 12, 21, 22, 23, 24, 26, 31, 33, 36, 40, 45, 51, 68, 79,
                   85, 92, 93, 97]
+
+
+def load_annotations_json(annotations_json_path, category=None):
+    """Load annotations into a dictionary mapping filenames to annotations."""
+    with open(annotations_json_path) as f:
+        annotations_list = json.load(f)
+    annotations = collections.defaultdict(list)
+    # Extract annotations for category
+    for annotation in annotations_list:
+        annotation = Annotation(**annotation)
+        if category is not None and annotation.category != category:
+            continue
+        annotations[annotation.filename].append(annotation)
+    return annotations
