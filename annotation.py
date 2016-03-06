@@ -74,6 +74,54 @@ def filter_annotations_by_category(annotations, category):
     return filtered_annotations
 
 
+def get_durations(annotations_groundtruth):
+    """
+    Args:
+        annotations_groundtruth (dict): Maps filenames to groundtruth
+            annotations.
+
+    Returns:
+        durations (list): List of durations (in frames) for all annotations.
+    """
+    durations = []
+    for annotations in annotations_groundtruth.values():
+        durations.extend([annotation.end_frame - annotation.start_frame + 1
+                          for annotation in annotations])
+    return np.asarray(durations)
+
+
+def compute_min_background_duration(annotations_groundtruth):
+    """
+    Args:
+        annotations_groundtruth (dict): Maps filenames to groundtruth
+            annotations.
+
+    Returns:
+        min_background_duration (int): Minimum duration (in frames) between two
+            annotations.
+
+    >>> SimpleAnnotation = collections.namedtuple(
+    ...         'SimpleAnnotation', ['start_frame', 'end_frame'])
+    >>> annotations = {'a': [SimpleAnnotation(3, 4), SimpleAnnotation(5, 6)]}
+    >>> compute_min_background_duration(annotations)
+    1
+    >>> annotations = {'a': [SimpleAnnotation(2, 3), SimpleAnnotation(6, 7)]}
+    >>> compute_min_background_duration(annotations)
+    2
+    """
+    min_background_duration = float('inf')
+    for filename, annotations in annotations_groundtruth.items():
+        sorted_annotations = sorted(annotations,
+                                    key=lambda x: (x.start_frame, x.end_frame))
+        min_background_duration = min(min_background_duration,
+                                      sorted_annotations[0].start_frame)
+        for i in range(len(annotations) - 1):
+            background_duration = (sorted_annotations[i + 1].start_frame -
+                                   sorted_annotations[i].end_frame)
+            min_background_duration = min(min_background_duration,
+                                          background_duration)
+    return min_background_duration
+
 def compute_duration_mean_std(annotation_groundtruth):
     """
     Args:
@@ -81,11 +129,7 @@ def compute_duration_mean_std(annotation_groundtruth):
             annotations.
 
     Returns:
-        mean, stderr of durations
+        mean, stderr of durations (in frames)
     """
-    durations = []
-    for annotations in annotation_groundtruth.values():
-        durations.extend([annotation.end_frame - annotation.start_frame + 1
-                          for annotation in annotations])
-    durations = np.array(durations)
+    durations = get_durations(annotation_groundtruth)
     return durations.mean(), durations.std()
