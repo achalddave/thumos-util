@@ -74,7 +74,7 @@ def filter_annotations_by_category(annotations, category):
     return filtered_annotations
 
 
-def calculate_duration_mean_std(annotation_groundtruth):
+def compute_duration_mean_std(annotation_groundtruth):
     """
     Args:
         annotation_groundtruth (dict): Maps filenames to groundtruth
