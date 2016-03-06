@@ -4,6 +4,13 @@ from math import ceil, floor
 from annotation import Annotation
 
 
+def load_class_list(class_list_path):
+    """List of categories in order of their index."""
+    with open(class_list_path) as f:
+        class_list = [line.strip().split(' ') for line in f]
+    return [x[1] for x in class_list]
+
+
 def parse_video_fps_file(video_frames_info_path):
     """Parse video frame info file.
 
