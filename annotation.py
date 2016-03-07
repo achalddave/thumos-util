@@ -81,7 +81,7 @@ def get_durations(annotations_groundtruth):
             annotations.
 
     Returns:
-        durations (list): List of durations (in frames) for all annotations.
+        durations (np.array): List of durations (in frames) for all annotations.
     """
     durations = []
     for annotations in annotations_groundtruth.values():
