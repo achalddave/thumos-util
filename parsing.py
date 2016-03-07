@@ -1,3 +1,4 @@
+import collections
 import csv
 from math import ceil, floor
 
@@ -6,10 +7,13 @@ from evaluation import Detection
 
 
 def load_class_list(class_list_path):
-    """List of categories in order of their index."""
+    """Returns a dictionary mapping category index to category name."""
+    mapping = collections.OrderedDict()
     with open(class_list_path) as f:
-        class_list = [line.strip().split(' ') for line in f]
-    return [x[1] for x in class_list]
+        for line in f:
+            details = line.strip().split(' ')
+            mapping[int(details[0])] = details[1]
+    return mapping
 
 
 def parse_video_fps_file(video_frames_info_path):
