@@ -69,12 +69,23 @@ def evaluate_detections(detections,
         test_annotations_dir (str): Path to test annotations dir.
         subset (str): 'val' or 'test'
         intersection_over_union_threshold (float)
-
-    Returns: None
     """
     dump_detections(detections, detections_output_path)
+    call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
+                         intersection_over_union_threshold)
+
+def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
+                         intersection_over_union_threshold):
+    """
+    Args:
+        detections_output_path (str): Path where detections will be output. This
+            is then passed to the MATLAB evaluation script.
+        test_annotations_dir (str): Path to test annotations dir.
+        subset (str): 'val' or 'test'
+        intersection_over_union_threshold (float)
+    """
     detections_output_path = os.path.abspath(detections_output_path)
-    command = ['matlab', '-nodesktop', '-nosplash', '-r']
+    command = ['matlab', '-nodesktop', '-nojvm', '-nosplash', '-r']
     matlab_commands = ('cd util/thumos-eval; '
                        'TH14evalDet('
                          '\'{detections_output_path}\','
