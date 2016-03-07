@@ -2,6 +2,7 @@ import csv
 from math import ceil, floor
 
 from annotation import Annotation
+from evaluation import Detection
 
 
 def load_class_list(class_list_path):
@@ -53,3 +54,23 @@ def parse_annotation_file(annotation_path, video_fps, category):
                                              'frames_per_second': current_fps,
                                              'category': category}))
     return annotations
+
+
+def load_detections(detections_path):
+    """Load detections from the format used by THUMOS '14's evaluation script.
+
+    The file should have lines of the form
+        <video_name> <start_second> <end_second> <category_index> <score>
+    """
+    detections = []
+    with open(detections_path) as f:
+        for line in f:
+            details = line.strip().split(' ')
+            video_name = details[0]
+            start_seconds = float(details[1])
+            end_seconds = float(details[2])
+            category_index = int(details[3])
+            score = float(details[4])
+            detections.append(Detection(video_name, start_seconds, end_seconds,
+                                        category_index, score))
+    return detections
