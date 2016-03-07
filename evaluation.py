@@ -85,4 +85,4 @@ def evaluate_detections(detections,
                        'exit;').format(**locals())
 
     command.append(matlab_commands)
-    subprocess.call(command, stdin=open(os.devnull, 'wb'))
+    subprocess.call(command, stdin=open(os.devnull, 'r'))
