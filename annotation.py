@@ -67,6 +67,13 @@ def get_durations(annotations_groundtruth):
 
 def compute_min_background_duration(annotations_groundtruth):
     """
+    Compute the minimum duration between two annotations.
+
+    NOTE: (Boundary effects) While this method accounts for the 'background' at
+    the start of the video before the first annotations, it doesn't account for
+    the length of the background after the last annotation but before the end
+    of the video.
+
     Args:
         annotations_groundtruth (dict): Maps filenames to groundtruth
             annotations.
@@ -96,6 +103,7 @@ def compute_min_background_duration(annotations_groundtruth):
             min_background_duration = min(min_background_duration,
                                           background_duration)
     return min_background_duration
+
 
 def compute_duration_mean_std(annotation_groundtruth):
     """
