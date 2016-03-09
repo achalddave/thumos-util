@@ -18,6 +18,8 @@ def load_annotations_json(annotations_json_path, category=None):
         annotations[annotation.filename].append(annotation)
     if category is not None:
         annotations = filter_annotations_by_category(annotations, category)
+    if not annotations:
+        raise ValueError('No annotations found with category %s.' % category)
     return annotations
 
 
