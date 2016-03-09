@@ -49,23 +49,25 @@ def filter_annotations_by_category(annotations, category):
     return filtered_annotations
 
 
-def get_durations(annotations_groundtruth):
+def get_durations(annotations):
     """
+    Extract durations from annotations.
+
     Args:
-        annotations_groundtruth (dict): Maps filenames to groundtruth
-            annotations.
+        annotations (dict): Maps filenames to annotations.
 
     Returns:
-        durations (np.array): List of durations (in frames) for all annotations.
+        durations (np.array): List of durations (in frames) for all
+            annotations.
     """
     durations = []
-    for annotations in annotations_groundtruth.values():
+    for annotations in annotations.values():
         durations.extend([annotation.end_frame - annotation.start_frame + 1
                           for annotation in annotations])
     return np.asarray(durations)
 
 
-def compute_min_background_duration(annotations_groundtruth):
+def compute_min_background_duration(annotations):
     """
     Compute the minimum duration between two annotations.
 
@@ -75,8 +77,7 @@ def compute_min_background_duration(annotations_groundtruth):
     of the video.
 
     Args:
-        annotations_groundtruth (dict): Maps filenames to groundtruth
-            annotations.
+        annotations (dict): Maps filenames to groundtruth annotations.
 
     Returns:
         min_background_duration (int): Minimum duration (in frames) between two
@@ -92,7 +93,7 @@ def compute_min_background_duration(annotations_groundtruth):
     2
     """
     min_background_duration = float('inf')
-    for filename, annotations in annotations_groundtruth.items():
+    for filename, annotations in annotations.items():
         sorted_annotations = sorted(annotations,
                                     key=lambda x: (x.start_frame, x.end_frame))
         min_background_duration = min(min_background_duration,
@@ -105,11 +106,10 @@ def compute_min_background_duration(annotations_groundtruth):
     return min_background_duration
 
 
-def compute_duration_mean_std(annotation_groundtruth):
+def compute_duration_mean_std(annotations):
     """
     Args:
-        annotation_groundtruth (dict): Maps filenames to groundtruth
-            annotations.
+        annotations (dict): Maps filenames to groundtruth annotations.
 
     Returns:
         mean, stderr of durations (in frames)
