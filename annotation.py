@@ -152,10 +152,13 @@ def compute_priors(training_annotations, class_list, frame_counts):
             objects.
         class_list (list of strings)
         frame_counts (dict): Maps filename to number of frames.
+
+    Returns:
+        priors (np.array, shape (len(class_list), )): Prior for each category.
     """
     num_total_frames = sum(frame_counts.values())
-    priors = []
-    for category in class_list:
+    priors = np.zeros(len(class_list))
+    for i, category in enumerate(class_list):
         category_annotations = filter_annotations_by_category(
             training_annotations, category)
         frame_label_sequences = [
@@ -165,5 +168,5 @@ def compute_priors(training_annotations, class_list, frame_counts):
         ]
         num_category_frames = sum([sequence.sum()
                                    for sequence in frame_label_sequences])
-        priors.append(num_category_frames / num_total_frames)
+        priors[i] = num_category_frames / num_total_frames
     return priors
