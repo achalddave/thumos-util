@@ -1,3 +1,5 @@
+from __future__ import division
+
 import collections
 import json
 import numpy as np
@@ -140,3 +142,28 @@ def annotations_to_frame_labels(annotations, num_frames):
         start, end = annotation.start_frame, annotation.end_frame
         frame_groundtruth[0, start:end + 1] = 1
     return frame_groundtruth.astype(int)
+
+
+def compute_priors(training_annotations, class_list, frame_counts):
+    """Compute P(category) prior for each category.
+
+    Args:
+        training_annotations (dict): Maps filenames to list of Annotation
+            objects.
+        class_list (list of strings)
+        frame_counts (dict): Maps filename to number of frames.
+    """
+    num_total_frames = sum(frame_counts.values())
+    priors = []
+    for category in class_list:
+        category_annotations = filter_annotations_by_category(
+            training_annotations, category)
+        frame_label_sequences = [
+            annotations_to_frame_labels(file_annotations,
+                                        frame_counts[filename])
+            for filename, file_annotations in category_annotations.items()
+        ]
+        num_category_frames = sum([sequence.sum()
+                                   for sequence in frame_label_sequences])
+        priors.append(num_category_frames / num_total_frames)
+    return priors
