@@ -16,8 +16,28 @@ def load_class_list(class_list_path):
     return mapping
 
 
-def parse_video_fps_file(video_frames_info_path):
-    """Parse video frame info file.
+def parse_frame_info_file(video_frames_info_path):
+    """Parse file containing FPS and num frames for each video.
+
+    Each line should be of the form "<video_name>,<fps>,<num_frames>
+
+    Returns:
+        video_frame_info (dict): Maps filename to (fps, num_frames).
+    """
+    video_frame_info = dict()
+    with open(video_frames_info_path) as f:
+        reader = csv.reader(f)
+        next(reader, None)  # Skip headers
+        for row in reader:
+            video_frame_info[row[0]] = (float(row[1]), int(row[2]))
+    return video_frame_info
+
+
+def parse_video_fps_file(video_fps_file):
+    """
+    (DEPRECATED): Use parse_frame_info_file.
+
+    Parse video frame info file.
 
     Each line should be of the form "<video_name>,<fps>[,<any_other_fields>]
 
