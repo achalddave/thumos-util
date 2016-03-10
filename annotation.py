@@ -116,7 +116,7 @@ def compute_duration_mean_std(annotations):
     Returns:
         mean, stderr of durations (in frames)
     """
-    durations = get_durations(annotation_groundtruth)
+    durations = get_durations(annotations)
     return durations.mean(), durations.std()
 
 
