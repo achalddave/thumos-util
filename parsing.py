@@ -6,8 +6,8 @@ from annotation import Annotation
 from evaluation import Detection
 
 
-def load_class_list(class_list_path):
-    """Returns a dictionary mapping category index to category name."""
+def load_class_mapping(class_list_path):
+    """Returns an OrderedDict mapping category index to category name."""
     mapping = collections.OrderedDict()
     with open(class_list_path) as f:
         for line in f:
