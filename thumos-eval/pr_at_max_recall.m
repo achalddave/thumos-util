@@ -1,4 +1,4 @@
-function [precision, recall] = pr_at_max_recall(detfilename, gtpath, subset, threshold)
+function [precision, recall, f1] = pr_at_max_recall(detfilename, gtpath, subset, threshold)
     % Evaluates the precision and recall at the lowest confidence threshold,
     % i.e. the maximum recall and precision at the maximum recall.
     %
@@ -21,4 +21,5 @@ function [precision, recall] = pr_at_max_recall(detfilename, gtpath, subset, thr
     end
     precision = mean(precisions);
     recall = mean(recalls);
+    f1 = 2 * (precision * recall) / (precision + recall);
 end
