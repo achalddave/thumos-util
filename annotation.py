@@ -118,3 +118,25 @@ def compute_duration_mean_std(annotations):
     """
     durations = get_durations(annotation_groundtruth)
     return durations.mean(), durations.std()
+
+
+def annotations_to_frame_labels(annotations, num_frames):
+    """
+    Args:
+        annotations (list of Annotation)
+        num_frames (int)
+
+    Returns:
+        frame_labels (np.array, shape (1, num_frames)): Binary vector
+            indicating whether each frame is in an annotation.
+    """
+    if len(set([annotation.filename for annotation in annotations])) != 1:
+        raise ValueError('Annotations should be for exactly one filename.')
+    if len(set([annotation.category for annotation in annotations])) != 1:
+        raise ValueError('Annotations should be for exactly one category.')
+
+    frame_groundtruth = np.zeros((1, num_frames))
+    for annotation in annotations:
+        start, end = annotation.start_frame, annotation.end_frame
+        frame_groundtruth[0, start:end + 1] = 1
+    return frame_groundtruth.astype(int)
