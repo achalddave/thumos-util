@@ -183,7 +183,7 @@ def annotations_overlap(x, y):
     return not (x_ends_before_y_starts or x_starts_after_y_ends)
 
 
-def get_overlapping_info(annotations):
+def compute_overlap_counts(annotations):
     """Count how often each action overlap occurs.
 
     Args:
@@ -197,8 +197,8 @@ def get_overlapping_info(annotations):
 
     >>> SimpleAnnotation = collections.namedtuple(
     ...         'SimpleAnnotation', ['start_frame', 'end_frame', 'category'])
-    >>> overlaps = get_overlapping_info({'1': [SimpleAnnotation(0, 2, 'a'),
-    ...                                        SimpleAnnotation(1, 3, 'b')]})
+    >>> overlaps = compute_overlap_counts({'1': [SimpleAnnotation(0, 2, 'a'),
+    ...                                          SimpleAnnotation(1, 3, 'b')]})
     >>> assert overlaps[frozenset('a')] == 1
     >>> assert overlaps[frozenset('b')] == 1
     >>> assert overlaps[frozenset(['a', 'b'])] == 2
