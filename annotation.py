@@ -170,3 +170,53 @@ def compute_priors(training_annotations, class_list, frame_counts):
                                    for sequence in frame_label_sequences])
         priors[i] = num_category_frames / num_total_frames
     return priors
+
+
+def in_annotation(annotation, frame_index):
+    return (annotation.start_frame <= frame_index <= annotation.end_frame)
+
+
+def annotations_overlap(x, y):
+    x_ends_before_y_starts = x.end_frame < y.start_frame
+    x_starts_after_y_ends = x.start_frame > y.end_frame
+    return not (x_ends_before_y_starts or x_starts_after_y_ends)
+
+
+def get_overlapping_info(annotations):
+    """Count how often each action overlap occurs.
+
+    Args:
+        annotations (dict): Maps filename to list of Annotation objects.
+
+    Returns:
+        overlap_instance_counts (collections.Counter): Maps a set of categories
+            to the number of instances where they overlapped (an instance is
+            defined by the annotations that make up the overlap).
+
+
+    >>> SimpleAnnotation = collections.namedtuple(
+    ...         'SimpleAnnotation', ['start_frame', 'end_frame', 'category'])
+    >>> overlaps = get_overlapping_info({'1': [SimpleAnnotation(0, 2, 'a'),
+    ...                                        SimpleAnnotation(1, 3, 'b')]})
+    >>> assert overlaps[frozenset('a')] == 1
+    >>> assert overlaps[frozenset('b')] == 1
+    >>> assert overlaps[frozenset(['a', 'b'])] == 2
+    """
+    # Maps category set to set of unique instances.
+    overlap_instances = collections.defaultdict(list)
+    for filename, file_annotations in annotations.items():
+        first_frame = min([annotation.start_frame
+                           for annotation in file_annotations])
+        last_frame = max([annotation.end_frame
+                          for annotation in file_annotations])
+        for frame in range(int(first_frame), int(last_frame) + 1):
+            current_annotations = [annotation
+                                   for annotation in file_annotations
+                                   if in_annotation(annotation, frame)]
+            category_set = frozenset(x.category for x in current_annotations)
+            instance = set((x.category, x.start_frame, x.end_frame)
+                           for x in current_annotations)
+            overlap_instances[category_set].append(instance)
+    overlap_counts = {categories: len(instances)
+                      for categories, instances in overlap_instances.items()}
+    return overlap_counts
