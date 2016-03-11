@@ -20,8 +20,9 @@ def load_annotations_json(annotations_json_path, category=None):
         annotations[annotation.filename].append(annotation)
     if category is not None:
         annotations = filter_annotations_by_category(annotations, category)
-    if not annotations:
-        raise ValueError('No annotations found with category %s.' % category)
+        if not annotations:
+            raise ValueError('No annotations found with category %s.' %
+                             category)
     return annotations
 
 
@@ -132,10 +133,10 @@ def annotations_to_frame_labels(annotations, num_frames):
         frame_labels (np.array, shape (1, num_frames)): Binary vector
             indicating whether each frame is in an annotation.
     """
-    if len(set([annotation.filename for annotation in annotations])) != 1:
-        raise ValueError('Annotations should be for exactly one filename.')
-    if len(set([annotation.category for annotation in annotations])) != 1:
-        raise ValueError('Annotations should be for exactly one category.')
+    if len(set([annotation.filename for annotation in annotations])) > 1:
+        raise ValueError('Annotations should be for at most one filename.')
+    if len(set([annotation.category for annotation in annotations])) > 1:
+        raise ValueError('Annotations should be for at most one category.')
 
     frame_groundtruth = np.zeros((1, num_frames))
     for annotation in annotations:
