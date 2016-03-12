@@ -2,6 +2,7 @@ from __future__ import division
 
 import collections
 import json
+
 import numpy as np
 
 Annotation = collections.namedtuple(
