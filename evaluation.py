@@ -64,8 +64,8 @@ def evaluate_detections(detections,
 
     Args:
         detections (list of Detections): List containing Detection objects.
-        detections_output_path (str): Path where detections will be output. This
-            is then passed to the MATLAB evaluation script.
+        detections_output_path (str): Path where detections will be output.
+            This is then passed to the MATLAB evaluation script.
         test_annotations_dir (str): Path to test annotations dir.
         subset (str): 'val' or 'test'
         intersection_over_union_threshold (float)
@@ -74,12 +74,13 @@ def evaluate_detections(detections,
     call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
                          intersection_over_union_threshold)
 
+
 def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
                          intersection_over_union_threshold):
     """
     Args:
-        detections_output_path (str): Path where detections will be output. This
-            is then passed to the MATLAB evaluation script.
+        detections_output_path (str): Path where detections will be output.
+            This is then passed to the MATLAB evaluation script.
         test_annotations_dir (str): Path to test annotations dir.
         subset (str): 'val' or 'test'
         intersection_over_union_threshold (float)
