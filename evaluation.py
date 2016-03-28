@@ -1,3 +1,4 @@
+from __future__ import division
 import collections
 import subprocess
 import os
@@ -98,3 +99,44 @@ def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
 
     command.append(matlab_commands)
     subprocess.call(command, stdin=open(os.devnull, 'r'))
+
+
+def compute_average_precision(groundtruth, predictions):
+    """
+    Computes average precision for a binary binary problem.
+
+    See:
+    <https://en.m.wikipedia.org/wiki/Information_retrieval#Average_precision>
+
+    This is what sklearn.metrics.average_precision_score should do, but it is
+    broken:
+    https://github.com/scikit-learn/scikit-learn/issues/5379
+    https://github.com/scikit-learn/scikit-learn/issues/6377
+
+    Args:
+        groundtruth (array-like): Binary vector indicating whether each sample
+            is positive or negative.
+        predictions (array-like): Contains scores for each sample.
+
+    Returns:
+        Average precision.
+    """
+    sorted_indices = sorted(
+        range(predictions.size),
+        key=lambda x: predictions[x],
+        reverse=True)
+
+    average_precision = 0
+    true_positives = 0
+    for num_guesses, index in enumerate(sorted_indices):
+        # The second clause here is crucial; otherwise, we give points to the
+        # predictor for samples it did not retrieve. See
+        # <http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-ranked-retrieval-results-1.html>
+        if groundtruth[index] and predictions[index] > 0:
+            true_positives += 1
+            precision = true_positives / (num_guesses + 1)
+            average_precision += precision
+    if sum(predictions) == 0:
+        print 'No predictions!'
+    average_precision /= sum(groundtruth)
+    return average_precision
