@@ -207,11 +207,10 @@ def compute_overlap_counts(annotations):
     # Maps category set to set of unique instances.
     overlap_instances = collections.defaultdict(list)
     for filename, file_annotations in annotations.items():
-        first_frame = min([annotation.start_frame
-                           for annotation in file_annotations])
-        last_frame = max([annotation.end_frame
-                          for annotation in file_annotations])
-        for frame in range(int(first_frame), int(last_frame) + 1):
+        frames_to_consider = sorted(list(
+            set([annotation.start_frame for annotation in file_annotations] +
+                [annotation.end_frame for annotation in file_annotations])))
+        for frame in frames_to_consider:
             current_annotations = [annotation
                                    for annotation in file_annotations
                                    if in_annotation(annotation, frame)]
