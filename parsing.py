@@ -1,3 +1,5 @@
+"""Tools for parsing THUMOS annotation files."""
+
 import collections
 import csv
 from math import ceil, floor
@@ -7,7 +9,13 @@ from evaluation import Detection
 
 
 def load_class_mapping(class_list_path):
-    """Returns an OrderedDict mapping category index to category name."""
+    """Load a class mapping from a file.
+
+    Each line should be of the form "<class_index> <class_name>".
+
+    Returns an OrderedDict mapping category index to category name. The order
+    of insertion is the same as the order of lines in the file.
+    """
     mapping = collections.OrderedDict()
     with open(class_list_path) as f:
         for line in f:
@@ -34,8 +42,7 @@ def parse_frame_info_file(video_frames_info_path):
 
 
 def parse_video_fps_file(video_fps_file):
-    """
-    (DEPRECATED): Use parse_frame_info_file.
+    """(DEPRECATED): Use parse_frame_info_file.
 
     Parse video frame info file.
 
@@ -54,11 +61,22 @@ def parse_video_fps_file(video_fps_file):
 
 
 def parse_annotation_file(annotation_path, video_fps, category):
+    """Parse THUMOS annotations.
+
+
+    Args:
+        annotation_path (str): Path to annotation file. Each line should be of
+            the form: "<video_name> <start_time> <end_time>" or
+            "<video_name>  <start_time> <end_time>" (notice one extra space).
+        video_fps (dict): Maps video file names to frames per second.
+        category (str): Category that these annotations belong to.
+
+    Returns:
+        annotations (list of Annotation)
+    """
     annotations = []
     with open(annotation_path) as f:
         for line in f:
-            # Format: "<video_name> <start_time> <end_time>" or
-            # "<video_name>  <start_time> <end_time>".
             # The THUMOS temporal labels have *two spaces* between the first two
             # fields (unfortunately), while the MultiTHUMOS labels have one
             # space.
@@ -83,8 +101,12 @@ def parse_annotation_file(annotation_path, video_fps, category):
 def load_detections(detections_path):
     """Load detections from the format used by THUMOS '14's evaluation script.
 
-    The file should have lines of the form
-        <video_name> <start_second> <end_second> <category_index> <score>
+    Args:
+        detections_path (str): Path to a file with lines of the form
+            <video_name> <start_second> <end_second> <category_index> <score>
+
+    Returns:
+        detections (list of Detection)
     """
     detections = []
     with open(detections_path) as f:

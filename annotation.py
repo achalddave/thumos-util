@@ -1,3 +1,4 @@
+"""Helpers for working with annotations."""
 from __future__ import division
 
 import collections

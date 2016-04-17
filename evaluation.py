@@ -1,3 +1,7 @@
+"""Helpers for evaluating detections on THUMOS.
+
+This file calls THUMOS' MATLAB scripts for the actual evaluation."""
+
 from __future__ import division
 import collections
 import subprocess
