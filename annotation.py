@@ -11,8 +11,18 @@ Annotation = collections.namedtuple(
                    'end_seconds', 'frames_per_second', 'category'])
 
 
-def load_annotations_json(annotations_json_path, category=None):
-    """Load annotations into a dictionary mapping filenames to annotations."""
+def load_annotations_json(annotations_json_path, filter_category=None):
+    """Load annotations into a dictionary mapping filenames to annotations.
+
+    Args:
+        annotations_json_path (str): Path to JSON file containing annotations.
+        filter_category (str): If specified, only annotations for that category
+            are returned.
+
+    Returns:
+        annotations (dict): Maps annotation file name to a list of Annotation
+            objects.
+    """
     with open(annotations_json_path) as f:
         annotations_list = json.load(f)
     annotations = collections.defaultdict(list)
@@ -20,11 +30,12 @@ def load_annotations_json(annotations_json_path, category=None):
     for annotation in annotations_list:
         annotation = Annotation(**annotation)
         annotations[annotation.filename].append(annotation)
-    if category is not None:
-        annotations = filter_annotations_by_category(annotations, category)
+    if filter_category is not None:
+        annotations = filter_annotations_by_category(annotations,
+                                                     filter_category)
         if not annotations:
             raise ValueError('No annotations found with category %s.' %
-                             category)
+                             filter_category)
     return annotations
 
 
