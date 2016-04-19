@@ -45,6 +45,8 @@ def filter_annotations_by_category(annotations, category):
 
     Args:
         annotations (dict): Maps filenames to list of Annotations.
+        category (str): Category to keep annotations from.
+
     Returns:
         filtered_annotations (dict): Maps filenames to list of Annotations.
 
@@ -138,8 +140,11 @@ def compute_duration_mean_std(annotations):
 
 def annotations_to_frame_labels(annotations, num_frames):
     """
+    Convert annotations for one category and one file to a binary label vector.
+
     Args:
-        annotations (list of Annotation)
+        annotations (list of Annotation): These must correspond to exactly one
+            file and one category.
         num_frames (int)
 
     Returns:
