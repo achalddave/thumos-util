@@ -52,7 +52,7 @@ def parse_video_fps_file(video_fps_file):
         video_fps (dict): Maps filename to fps.
     """
     video_fps = dict()
-    with open(video_frames_info_path) as f:
+    with open(video_fps_file) as f:
         reader = csv.reader(f)
         next(reader, None)  # Skip headers
         for row in reader:
