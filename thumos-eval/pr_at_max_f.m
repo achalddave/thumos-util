@@ -21,13 +21,13 @@ function [precision, recall, f1] = pr_at_max_f(...
 
         recs = precision_recalls(i).rec;
         precs = precision_recalls(i).prec;
-        fs = (2 * recs * precs) ./ (recs + precs);
+        fs = (2 * recs .* precs) ./ (recs + precs);
 
-        [~, max_index] = max(fs);
+        [max_f, max_index] = max(fs);
         precisions(i) = precs(max_index);
         recalls(i) = recs(max_index);
         fprintf('Precison:%1.3f, Recall:%1.3f and F:%1.3f for %s\n',...
-                precisions(i), recalls(i), max_index, category)
+                precisions(i), recalls(i), max_f, category)
     end
     precision = mean(precisions);
     recall = mean(recalls);
