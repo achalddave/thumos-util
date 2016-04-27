@@ -61,7 +61,8 @@ def evaluate_detections(detections,
                         detections_output_path,
                         test_annotations_dir,
                         subset='val',
-                        intersection_over_union_threshold=0.1):
+                        intersection_over_union_threshold=0.1,
+                        call_max_f=False):
     """
     Run THUMOS' MATLAB evaluation script on detections.
 
@@ -74,10 +75,11 @@ def evaluate_detections(detections,
         test_annotations_dir (str): Path to test annotations dir.
         subset (str): 'val' or 'test'
         intersection_over_union_threshold (float)
+        call_max_f (bool): As in call_matlab_evaluate.
     """
     dump_detections(detections, detections_output_path)
     call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
-                         intersection_over_union_threshold)
+                         intersection_over_union_threshold, call_max_f)
 
 
 def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
