@@ -81,19 +81,24 @@ def evaluate_detections(detections,
 
 
 def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
-                         intersection_over_union_threshold):
+                         intersection_over_union_threshold, call_max_f=True):
     """
+    TODO(achald): This 'cd's into util, which doesn't really make sense.
+
     Args:
         detections_output_path (str): Path where detections will be output.
             This is then passed to the MATLAB evaluation script.
         test_annotations_dir (str): Path to test annotations dir.
         subset (str): 'val' or 'test'
         intersection_over_union_threshold (float)
+        call_max_f (bool): If true, calls pr_at_max_f.m instead of
+            TH14EvalDet.m.
     """
     detections_output_path = os.path.abspath(detections_output_path)
     command = ['matlab', '-nodesktop', '-nojvm', '-nosplash', '-r']
+    function_name = 'pr_at_max_f' if call_max_f else 'TH14evalDet'
     matlab_commands = ('cd util/thumos-eval; '
-                       'TH14evalDet('
+                       '{function_name}('
                          '\'{detections_output_path}\','
                          '\'{test_annotations_dir}\','
                          '\'{subset}\','
