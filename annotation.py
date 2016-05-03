@@ -158,7 +158,7 @@ def annotations_to_frame_labels(annotations, num_frames):
 
     frame_groundtruth = np.zeros((1, num_frames))
     for annotation in annotations:
-        start, end = annotation.start_frame, annotation.end_frame
+        start, end = int(annotation.start_frame), int(annotation.end_frame)
         frame_groundtruth[0, start:end + 1] = 1
     return frame_groundtruth.astype(int)
 
