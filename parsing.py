@@ -63,7 +63,6 @@ def parse_video_fps_file(video_fps_file):
 def parse_annotation_file(annotation_path, video_fps, category):
     """Parse THUMOS annotations.
 
-
     Args:
         annotation_path (str): Path to annotation file. Each line should be of
             the form: "<video_name> <start_time> <end_time>" or

@@ -114,7 +114,7 @@ def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
 
 def compute_average_precision(groundtruth, predictions):
     """
-    Computes average precision for a binary binary problem.
+    Computes average precision for a binary problem.
 
     See:
     <https://en.m.wikipedia.org/wiki/Information_retrieval#Average_precision>
@@ -139,6 +139,8 @@ def compute_average_precision(groundtruth, predictions):
 
     average_precision = 0
     true_positives = 0
+    if sum(predictions) == 0:
+        print 'No predictions!'
     for num_guesses, index in enumerate(sorted_indices):
         # The second clause here is crucial; otherwise, we give points to the
         # predictor for samples it did not retrieve. See
@@ -147,7 +149,5 @@ def compute_average_precision(groundtruth, predictions):
             true_positives += 1
             precision = true_positives / (num_guesses + 1)
             average_precision += precision
-    if sum(predictions) == 0:
-        print 'No predictions!'
     average_precision /= sum(groundtruth)
     return average_precision
