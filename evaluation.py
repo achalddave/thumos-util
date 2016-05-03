@@ -83,7 +83,7 @@ def evaluate_detections(detections,
 
 
 def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
-                         intersection_over_union_threshold, call_max_f=True):
+                         intersection_over_union_threshold, call_max_f=False):
     """
     TODO(achald): This 'cd's into util, which doesn't really make sense.
 
