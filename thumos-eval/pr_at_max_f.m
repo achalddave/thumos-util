@@ -42,8 +42,6 @@ function [precision, recall, f1] = pr_at_max_f(...
         % 'thresholds.' (See comment for single_confidence_hack parameter for
         % more information)
         if single_confidence_hack && numel(unique(confidences)) == 1
-            precision_recalls(i).prec
-            precision_recalls(i).rec
             precisions(i) = precision_recalls(i).prec(end);
             recalls(i) = precision_recalls(i).rec(end);
             max_f = compute_fs(precisions(i), recalls(i));
