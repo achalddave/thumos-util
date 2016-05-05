@@ -62,7 +62,8 @@ def evaluate_detections(detections,
                         test_annotations_dir,
                         subset='val',
                         intersection_over_union_threshold=0.1,
-                        call_max_f=False):
+                        call_max_f=False,
+                        single_confidence_hack=False):
     """
     Run THUMOS' MATLAB evaluation script on detections.
 
@@ -76,14 +77,20 @@ def evaluate_detections(detections,
         subset (str): 'val' or 'test'
         intersection_over_union_threshold (float)
         call_max_f (bool): As in call_matlab_evaluate.
+        single_confidence_hack (bool): As in call_matlab_evaluate.
     """
     dump_detections(detections, detections_output_path)
     call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
-                         intersection_over_union_threshold, call_max_f)
+                         intersection_over_union_threshold, call_max_f,
+                         single_confidence_hack)
 
 
-def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
-                         intersection_over_union_threshold, call_max_f=False):
+def call_matlab_evaluate(detections_output_path,
+                         test_annotations_dir,
+                         subset,
+                         intersection_over_union_threshold,
+                         call_max_f=False,
+                         single_confidence_hack=False):
     """
     TODO(achald): This 'cd's into util, which doesn't really make sense.
 
@@ -95,18 +102,35 @@ def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
         intersection_over_union_threshold (float)
         call_max_f (bool): If true, calls pr_at_max_f.m instead of
             TH14EvalDet.m.
+        single_confidence_hack (bool): Only valid if call_max_f is True. Passed
+            to pr_at_max_f as single_confidence_hack parameter.
     """
+    if single_confidence_hack and not call_max_f:
+        raise ValueError('single_confidence_hack can only be used in'
+                         ' conjunction with call_max_f')
+
     detections_output_path = os.path.abspath(detections_output_path)
     command = ['matlab', '-nodesktop', '-nojvm', '-nosplash', '-r']
-    function_name = 'pr_at_max_f' if call_max_f else 'TH14evalDet'
-    matlab_commands = ("cd util/thumos-eval; "
-                       "{function_name}("
-                         "'{detections_output_path}',"
-                         "'{test_annotations_dir}',"
-                         "'{subset}',"
-                         "{intersection_over_union_threshold}"
-                       ");"
-                       "exit;").format(**locals())
+    matlab_commands = "cd util/thumos-eval;"
+    if call_max_f:
+        # Matlab uses true/false, Python uses True/False.
+        single_confidence_hack_string = str(single_confidence_hack).lower()
+        matlab_commands += (
+                "pr_at_max_f("
+                    "'{detections_output_path}',"
+                    "'{test_annotations_dir}',"
+                    "'{subset}',"
+                    "{intersection_over_union_threshold},"
+                    "{single_confidence_hack_string}"
+                ");").format(**locals())
+    else:
+        matlab_commands += (
+                "TH14evalDet("
+                    "'{detections_output_path}',"
+                    "'{test_annotations_dir}',"
+                    "'{subset}',"
+                    "{intersection_over_union_threshold}"
+                ");").format(**locals())
 
     command.append(matlab_commands)
     subprocess.call(command, stdin=open(os.devnull, 'r'))
