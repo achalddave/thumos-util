@@ -99,14 +99,14 @@ def call_matlab_evaluate(detections_output_path, test_annotations_dir, subset,
     detections_output_path = os.path.abspath(detections_output_path)
     command = ['matlab', '-nodesktop', '-nojvm', '-nosplash', '-r']
     function_name = 'pr_at_max_f' if call_max_f else 'TH14evalDet'
-    matlab_commands = ('cd util/thumos-eval; '
-                       '{function_name}('
-                         '\'{detections_output_path}\','
-                         '\'{test_annotations_dir}\','
-                         '\'{subset}\','
-                         '{intersection_over_union_threshold}'
-                       ');'
-                       'exit;').format(**locals())
+    matlab_commands = ("cd util/thumos-eval; "
+                       "{function_name}("
+                         "'{detections_output_path}',"
+                         "'{test_annotations_dir}',"
+                         "'{subset}',"
+                         "{intersection_over_union_threshold}"
+                       ");"
+                       "exit;").format(**locals())
 
     command.append(matlab_commands)
     subprocess.call(command, stdin=open(os.devnull, 'r'))
