@@ -171,7 +171,7 @@ def compute_average_precision(groundtruth, predictions):
     ...                            % (ap, expected_ap))
     """
     sorted_indices = sorted(
-        range(predictions.size),
+        range(len(predictions)),
         key=lambda x: predictions[x],
         reverse=True)
 
