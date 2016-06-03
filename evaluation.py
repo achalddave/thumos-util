@@ -27,7 +27,7 @@ def binarized_predictions_to_detection_tuples(binary_predictions):
 
     >>> predictions = np.array([0, 0, 0, 1, 1, 1, 0, 0, 1])
     >>> predictions = predictions.reshape((len(predictions), 1))
-    >>> binarized_predictions_to_detections(predictions)
+    >>> binarized_predictions_to_detection_tuples(predictions)
     [(3, 5), (8, 8)]
     """
     # Pad with 0s on both sides to detect changes at the beginning and end
