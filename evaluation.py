@@ -155,6 +155,20 @@ def compute_average_precision(groundtruth, predictions):
 
     Returns:
         Average precision.
+
+    >>> predictions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    >>> groundtruth = [1, 0, 1, 1, 1, 1, 0, 0, 0, 1]
+    >>> expected_ap = (1. + 2/3. + 3/4. + 4/5. + 5/6. + 6/10.) / 6
+    >>> ap = compute_average_precision(groundtruth, predictions)
+    >>> assert ap == expected_ap, ('Expected %s, received %s'
+    ...                            % (ap, expected_ap))
+
+    >>> predictions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
+    >>> groundtruth = [1, 0, 0, 0, 1, 1, 0, 0, 0, 1]
+    >>> expected_ap = (1. + 2/5. + 3/6. + 4/10.) / 4
+    >>> ap = compute_average_precision(groundtruth, predictions)
+    >>> assert ap == expected_ap, ('Expected %s, received %s'
+    ...                            % (ap, expected_ap))
     """
     sorted_indices = sorted(
         range(predictions.size),
