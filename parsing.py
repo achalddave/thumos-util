@@ -115,8 +115,7 @@ def load_thumos_annotations(annotations_dir, video_frames_info):
             category = category[:-len('_test')]
         annotation_details = parse_annotation_file(annotation_path, video_fps,
                                                    category)
-        annotations.extend([annotation._asdict()
-                            for annotation in annotation_details])
+        annotations.extend(annotation_details)
 
     return annotations
 
