@@ -15,8 +15,9 @@ def load_class_mapping(class_list_path):
 
     Each line should be of the form "<class_index> <class_name>".
 
-    Returns an OrderedDict mapping category index to category name. The order
-    of insertion is the same as the order of lines in the file.
+    Returns:
+        mapping (OrderedDict): Maps category index to category name. The order
+            of insertion is the same as the order of lines in the file.
     """
     mapping = collections.OrderedDict()
     with open(class_list_path) as f:
