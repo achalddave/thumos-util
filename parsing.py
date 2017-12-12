@@ -6,8 +6,8 @@ import os
 from os import path
 from math import ceil, floor
 
-from evaluation import Detection
-from video_tools.util.annotation import Annotation
+from .evaluation import Detection
+from .video_tools.util.annotation import Annotation
 
 
 def load_class_mapping(class_list_path):

@@ -178,7 +178,7 @@ def compute_average_precision(groundtruth, predictions):
     average_precision = 0
     true_positives = 0
     if sum(predictions) == 0:
-        print 'No predictions!'
+        print('No predictions!')
     for num_guesses, index in enumerate(sorted_indices):
         # The second clause here is crucial; otherwise, we give points to the
         # predictor for samples it did not retrieve. See
