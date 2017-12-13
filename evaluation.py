@@ -138,15 +138,11 @@ def call_matlab_evaluate(detections_output_path,
 
 def compute_average_precision(groundtruth, predictions):
     """
-    Computes average precision for a binary problem.
+    Computes average precision for a binary problem. This is based off of the
+    PASCAL VOC implementation.
 
-    See:
-    <https://en.m.wikipedia.org/wiki/Information_retrieval#Average_precision>
-
-    This is what sklearn.metrics.average_precision_score should do, but it is
-    broken:
-    https://github.com/scikit-learn/scikit-learn/issues/5379
-    https://github.com/scikit-learn/scikit-learn/issues/6377
+    From:
+        https://github.com/achalddave/average-precision/blob/adafd5d29c0932a0002e4cf7ddbaf7970aefff5c/python/ap.py
 
     Args:
         groundtruth (array-like): Binary vector indicating whether each sample
@@ -156,36 +152,47 @@ def compute_average_precision(groundtruth, predictions):
     Returns:
         Average precision.
 
-    >>> predictions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-    >>> groundtruth = [1, 0, 1, 1, 1, 1, 0, 0, 0, 1]
-    >>> expected_ap = (1. + 2/3. + 3/4. + 4/5. + 5/6. + 6/10.) / 6
-    >>> ap = compute_average_precision(groundtruth, predictions)
-    >>> assert ap == expected_ap, ('Expected %s, received %s'
-    ...                            % (ap, expected_ap))
-
-    >>> predictions = [10, 9, 8, 7, 6, 5, 4, 3, 2, 1]
-    >>> groundtruth = [1, 0, 0, 0, 1, 1, 0, 0, 0, 1]
-    >>> expected_ap = (1. + 2/5. + 3/6. + 4/10.) / 4
-    >>> ap = compute_average_precision(groundtruth, predictions)
-    >>> assert ap == expected_ap, ('Expected %s, received %s'
-    ...                            % (ap, expected_ap))
     """
-    sorted_indices = sorted(
-        range(len(predictions)),
-        key=lambda x: predictions[x],
-        reverse=True)
+    predictions = np.asarray(predictions)
+    groundtruth = np.asarray(groundtruth, dtype=float)
 
-    average_precision = 0
-    true_positives = 0
-    if sum(predictions) == 0:
-        print('No predictions!')
-    for num_guesses, index in enumerate(sorted_indices):
-        # The second clause here is crucial; otherwise, we give points to the
-        # predictor for samples it did not retrieve. See
-        # <http://nlp.stanford.edu/IR-book/html/htmledition/evaluation-of-ranked-retrieval-results-1.html>
-        if groundtruth[index] and predictions[index] > 0:
-            true_positives += 1
-            precision = true_positives / (num_guesses + 1)
-            average_precision += precision
-    average_precision /= sum(groundtruth)
-    return average_precision
+    sorted_indices = np.argsort(predictions)[::-1]
+    predictions = predictions[sorted_indices]
+    groundtruth = groundtruth[sorted_indices]
+    # The false positives are all the negative groundtruth instances, since we
+    # assume all instances were 'retrieved'. Ideally, these will be low scoring
+    # and therefore in the end of the vector.
+    false_positives = 1 - groundtruth
+
+    tp = np.cumsum(groundtruth)      # tp[i] = # of positive examples up to i
+    fp = np.cumsum(false_positives)  # fp[i] = # of false positives up to i
+
+    num_positives = tp[-1]
+
+    precisions = tp / np.maximum(tp + fp, np.finfo(np.float64).eps)
+    recalls = tp / num_positives
+
+    # Append end points of the precision recall curve.
+    precisions = np.concatenate(([0.], precisions))
+    recalls = np.concatenate(([0.], recalls))
+
+    # Find points where prediction score changes.
+    prediction_changes = set(
+        np.where(predictions[1:] != predictions[:-1])[0] + 1)
+
+    num_examples = predictions.shape[0]
+
+    # Recall and scores always "change" at the first and last prediction.
+    c = prediction_changes | set([0, num_examples])
+    c = np.array(sorted(list(c)), dtype=np.int)
+
+    precisions = precisions[c[1:]]
+
+    # Set precisions[i] = max(precisions[j] for j >= i)
+    # This is because (for j > i), recall[j] >= recall[i], so we can always use
+    # a lower threshold to get the higher recall and higher precision at j.
+    precisions = np.maximum.accumulate(precisions[::-1])[::-1]
+
+    ap = np.sum((recalls[c[1:]] - recalls[c[:-1]]) * precisions)
+
+    return ap
