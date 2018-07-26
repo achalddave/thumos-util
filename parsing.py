@@ -23,7 +23,7 @@ def load_class_mapping(class_list_path):
     with open(class_list_path) as f:
         for line in f:
             details = line.strip().split(' ')
-            mapping[int(details[0])] = details[1]
+            mapping[int(details[0])] = ' '.join(details[1:])
     return mapping
 
 
